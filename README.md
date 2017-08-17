@@ -1,2 +1,2 @@
-# lipgam-se-scripting
-Space Engineers scripting library of the LipGam gaming community
+# LipGam's Space Engineers Ingame Scripts
+Some scripts for automating our Space Engineers world.
