@@ -9,6 +9,8 @@ The scripting library is kindly powered by @malware-dev's Development Kit for Sp
 - Select the scripts from the ingame workshop.
 - Configure your blocks in the terminal according to the scripts needs. See the Wiki for descriptions of each script.
 
+Take a look to our Wiki to read how to use the scripts.
+
 ## Getting started with development
 What you need:
 - Visual Studio 2017
