@@ -4,15 +4,21 @@
 
 namespace LipGam.SE.Scripting.Common
 {
-    using Sandbox.ModAPI.Ingame;
     using System.Collections.Generic;
+    using Sandbox.ModAPI.Ingame;
 
     /// <summary>
-    /// Extension wrapper for ingame terminal blocks.
+    /// Extension wrapper for in-game terminal blocks.
     /// </summary>
     /// <typeparam name="TBlock">The actual type of the wrapped block.</typeparam>
-    public interface IExtendedBlock<TBlock> where TBlock : IMyTerminalBlock
+    public interface IExtendedBlock<out TBlock>
+        where TBlock : IMyTerminalBlock
     {
+        /// <summary>
+        /// Gets the actual in-game block object.
+        /// </summary>
+        TBlock Block { get; }
+
         /// <summary>
         /// Gets the custom data of the block.
         /// </summary>
@@ -27,11 +33,6 @@ namespace LipGam.SE.Scripting.Common
         /// Gets the sub section this block is assigned to.
         /// </summary>
         string SubSection { get; }
-
-        /// <summary>
-        /// Gets the actual ingame block object.
-        /// </summary>
-        TBlock Block { get; }
 
         /// <summary>
         /// Reloads the data of this block.

@@ -2,7 +2,7 @@
 //      Copyright © LipGam Gaming Community. All rights reserved.
 // </copyright>
 
-namespace LipGam.SE.Scripting.PressurizationMonitor
+namespace LipGam.SE.Scripting.PressurizationMonitoring
 {
     using System;
     using System.Collections.Generic;
@@ -18,6 +18,9 @@ namespace LipGam.SE.Scripting.PressurizationMonitor
     /// </summary>
     internal class Program
     {
+        /// <summary>
+        /// The station in which the script runs.
+        /// </summary>
         private Station station;
 
         /// <summary>
@@ -40,42 +43,70 @@ namespace LipGam.SE.Scripting.PressurizationMonitor
         /// <param name="argument">The script argument provided by executing block.</param>
         public void Main(string argument)
         {
+            StringBuilder debugStringBuilder = new StringBuilder();
+            IMyTextPanel debugPanel = GridProgram.GridTerminalSystem.GetBlockWithName("DebugLCD") as IMyTextPanel;
+            debugPanel?.GetProperty("FontColor").AsColor().SetValue(debugPanel, Color.White);
             if (station == null)
             {
                 station = new Station();
                 station.RequiresAspect<RoomPressure>();
-
-                // this.station.RequiresAspect<LockRoomOnPressureDecrease>();
+                station.RequiresAspect<LockRoomOnPressureDecrease>();
                 station.InitializeFromGrid(GridProgram.GridTerminalSystem);
             }
 
             try
             {
+                int roomNameWidth = station.Rooms.Max(r => r.Name?.Length ?? 0);
+                int severity = 0;
                 StringBuilder stringBuilder = new StringBuilder();
-                foreach (IRoom room in station.Rooms)
+                foreach (IGrouping<string, IRoom> grouping in station.Rooms.GroupBy(r => r.Section).OrderBy(g => g.Key))
                 {
-                    RoomPressure pressure = room.GetAspect<RoomPressure>();
-                    pressure.UpdateAspect();
+                    stringBuilder.AppendLine("SEKTION " + grouping.Key);
+                    foreach (IRoom room in grouping.OrderBy(r => r.Section))
+                    {
+                        RoomPressure pressure = room.GetAspect<RoomPressure>();
+                        pressure.UpdateAspect();
+                        if (pressure.Status == RoomPressure.PressureStatus.Unknown)
+                        {
+                            debugStringBuilder.AppendLine($"Room without pressure data: Section {room.Section} {room.Name}");
+                            continue;
+                        }
 
-                    // LockRoomOnPressureDecrease locking = room.GetAspect<LockRoomOnPressureDecrease>();
-                    // locking.UpdateAspect();
-                    string subSection = !string.IsNullOrWhiteSpace(room.Name) ? $" ({room.Name})" : string.Empty;
-                    stringBuilder.AppendLine($"Section {room.Section}{subSection}: {room.Name} {pressure.Pressure * 100:F0}% ({pressure.Status})");
+                        if ((pressure.Status == RoomPressure.PressureStatus.Decreasing) || (pressure.Pressure < 0.2))
+                        {
+                            severity = 2;
+                        }
+                        else if ((pressure.Status == RoomPressure.PressureStatus.Decreasing) || (pressure.Pressure < 0.8))
+                        {
+                            severity = Math.Max(severity, 1);
+                        }
+
+                        LockRoomOnPressureDecrease locking = room.GetAspect<LockRoomOnPressureDecrease>();
+                        locking.UpdateAspect();
+
+                        string roomText = (room.Name ?? string.Empty).PadRight(roomNameWidth);
+                        string pressureText = (pressure.Pressure * 100).ToString("F0").PadLeft(3);
+                        string statusText = pressure.Status.ToString().PadRight(10);
+                        string lockedText = locking.Locked ? "! Locked !" : string.Empty;
+                        stringBuilder.AppendLine($"    {roomText}  {pressureText}% {statusText}   {lockedText}");
+
+                        debugStringBuilder.AppendLine(string.Join(";", locking.TemporaryOpenDoors.Select(kvp => $"{kvp.Key.CustomName} {kvp.Value}")));
+                    }
+                    stringBuilder.AppendLine();
                 }
 
                 Color foreground;
-                IEnumerable<RoomPressure> allPressures = station.Rooms.Select(r => r.GetAspect<RoomPressure>()).ToList();
-                if (allPressures.Any(p => p.Pressure < 0.2))
+                switch (severity)
                 {
-                    foreground = Color.Red;
-                }
-                else if (allPressures.Any(p => p.Status == RoomPressure.PressureStatus.Decreasing || p.Pressure < 0.8))
-                {
-                    foreground = Color.Yellow;
-                }
-                else
-                {
-                    foreground = Color.Green;
+                    case 0:
+                        foreground = Color.Green;
+                        break;
+                    case 1:
+                        foreground = Color.Yellow;
+                        break;
+                    default:
+                        foreground = Color.Red;
+                        break;
                 }
 
                 IMyTextPanel textPanel = GridProgram.GridTerminalSystem.GetBlockWithName("TestLCD") as IMyTextPanel;
@@ -85,8 +116,12 @@ namespace LipGam.SE.Scripting.PressurizationMonitor
             }
             catch (Exception e)
             {
-                GridProgram.Me.CustomData = e.ToString();
+                debugPanel?.GetProperty("FontColor").AsColor().SetValue(debugPanel, Color.DarkRed);
+                debugStringBuilder.AppendLine(e.ToString());
             }
+
+            debugPanel?.WritePublicText(debugStringBuilder);
+            debugPanel?.ShowPublicTextOnScreen();
         }
 
         /// <summary>

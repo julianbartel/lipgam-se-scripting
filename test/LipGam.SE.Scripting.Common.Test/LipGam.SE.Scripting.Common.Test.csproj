@@ -80,6 +80,11 @@
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
-  <Import Project="..\..\src\LipGam.SE.Scripting.Common\LipGam.SE.Scripting.Common.projitems" Label="Shared" />
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\LipGam.SE.Scripting.Common\LipGam.SE.Scripting.Common.csproj">
+      <Project>{e909424b-8637-40cf-809a-a3c93c80c007}</Project>
+      <Name>LipGam.SE.Scripting.Common</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

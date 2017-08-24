@@ -4,9 +4,10 @@
 
 namespace LipGam.SE.Scripting.Common
 {
-    using SpaceEngineers.Game.ModAPI.Ingame;
+    using System;
     using System.Collections.Generic;
     using System.Linq;
+    using SpaceEngineers.Game.ModAPI.Ingame;
 
     /// <summary>
     /// Aspect for a room's pressurization.
@@ -14,10 +15,25 @@ namespace LipGam.SE.Scripting.Common
     public class RoomPressure : IRoomAspect
     {
         /// <summary>
+        /// The vents in the room.
+        /// </summary>
+        public readonly List<IMyAirVent> vents = new List<IMyAirVent>();
+
+        /// <summary>
+        /// The pressure of the last update.
+        /// </summary>
+        private double lastPressure;
+
+        /// <summary>
         /// The status of the room pressure.
         /// </summary>
         public enum PressureStatus
         {
+            /// <summary>
+            /// The pressure can not be determined.
+            /// </summary>
+            Unknown,
+
             /// <summary>
             /// Pressure is stable.
             /// </summary>
@@ -31,23 +47,13 @@ namespace LipGam.SE.Scripting.Common
             /// <summary>
             /// Pressure increases.
             /// </summary>
-            Decreasing,
+            Decreasing
         }
-
-        /// <summary>
-        /// The vents in the room.
-        /// </summary>
-        private readonly List<IMyAirVent> vents = new List<IMyAirVent>();
-
-        /// <summary>
-        /// The pressure of the last update.
-        /// </summary>
-        private double lastPressure;
 
         /// <summary>
         /// Gets the current pressure of the room.
         /// </summary>
-        public double Pressure => this.vents.Any() ? this.vents.Min(v => v.GetOxygenLevel()) : double.NaN;
+        public double Pressure => vents.Any() ? vents.Min(v => v.GetOxygenLevel()) : double.NaN;
 
         /// <summary>
         /// Gets the room pressurization status.
@@ -57,24 +63,28 @@ namespace LipGam.SE.Scripting.Common
         /// <inheritdoc />
         public void InitializeAspect(IRoom room)
         {
-            this.vents.Clear();
+            vents.Clear();
             foreach (IMyAirVent vent in room.Blocks.Select(b => b.Block).OfType<IMyAirVent>())
             {
                 vents.Add(vent);
             }
 
-            this.lastPressure = Pressure;
+            lastPressure = Pressure;
             UpdateAspect();
         }
 
         /// <inheritdoc />
         public void UpdateAspect()
         {
-            if (Pressure == this.lastPressure)
+            if (!vents.Any())
+            {
+                Status = PressureStatus.Unknown;
+            }
+            else if (Math.Abs(Pressure - lastPressure) <= 0.001)
             {
                 Status = PressureStatus.Stable;
             }
-            else if (Pressure > this.lastPressure)
+            else if (Pressure > lastPressure)
             {
                 Status = PressureStatus.Increasing;
             }
@@ -83,7 +93,7 @@ namespace LipGam.SE.Scripting.Common
                 Status = PressureStatus.Decreasing;
             }
 
-            this.lastPressure = Pressure;
+            lastPressure = Pressure;
         }
     }
 }

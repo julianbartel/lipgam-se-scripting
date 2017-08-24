@@ -1,6 +1,7 @@
 ﻿// <copyright file="ScriptBootstrapper.cs" company="LipGam">
 //      Copyright © LipGam Gaming Community. All rights reserved.
 // </copyright>
+
 namespace IngameScript
 {
     using Sandbox.ModAPI.Ingame;
@@ -13,7 +14,7 @@ namespace IngameScript
         /// <summary>
         /// The actual program.
         /// </summary>
-        private LipGam.SE.Scripting.PressurizationMonitor.Program program;
+        private LipGam.SE.Scripting.PressurizationMonitoring.Program program;
 
         /// <summary>
         /// Entry point of the script.
@@ -21,12 +22,12 @@ namespace IngameScript
         /// <param name="argument">The script argument provided by executing block.</param>
         public void Main(string argument)
         {
-            if (this.program == null)
+            if (program == null)
             {
-                this.program = new LipGam.SE.Scripting.PressurizationMonitor.Program(this);
+                program = new LipGam.SE.Scripting.PressurizationMonitoring.Program(this);
             }
 
-            this.program.Main(argument);
+            program.Main(argument);
         }
     }
 }

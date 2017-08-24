@@ -8,6 +8,10 @@ namespace LipGam.SE.Scripting.Common
     using System.Collections.Generic;
     using Sandbox.ModAPI.Ingame;
 
+    /// <summary>
+    /// Implementation of the <see cref="IExtendedBlock{TBlock}"/> interface.
+    /// </summary>
+    /// <typeparam name="TBlock">The type of the game block.</typeparam>
     public class ExtendedBlock<TBlock> : IExtendedBlock<TBlock>
         where TBlock : IMyTerminalBlock
     {
