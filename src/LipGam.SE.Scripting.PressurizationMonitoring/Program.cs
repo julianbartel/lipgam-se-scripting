@@ -89,8 +89,6 @@ namespace LipGam.SE.Scripting.PressurizationMonitoring
                         string statusText = pressure.Status.ToString().PadRight(10);
                         string lockedText = locking.Locked ? "! Locked !" : string.Empty;
                         stringBuilder.AppendLine($"    {roomText}  {pressureText}% {statusText}   {lockedText}");
-
-                        debugStringBuilder.AppendLine(string.Join(";", locking.TemporaryOpenDoors.Select(kvp => $"{kvp.Key.CustomName} {kvp.Value}")));
                     }
                     stringBuilder.AppendLine();
                 }
@@ -109,7 +107,7 @@ namespace LipGam.SE.Scripting.PressurizationMonitoring
                         break;
                 }
 
-                IMyTextPanel textPanel = GridProgram.GridTerminalSystem.GetBlockWithName("TestLCD") as IMyTextPanel;
+                IMyTextPanel textPanel = GridProgram.GridTerminalSystem.GetBlockWithName("PressureLCD") as IMyTextPanel;
                 textPanel.WritePublicText(stringBuilder);
                 textPanel.ShowPublicTextOnScreen();
                 textPanel.GetProperty("FontColor").AsColor().SetValue(textPanel, foreground);

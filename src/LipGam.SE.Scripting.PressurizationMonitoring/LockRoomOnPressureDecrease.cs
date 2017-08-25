@@ -16,15 +16,24 @@ namespace LipGam.SE.Scripting.PressurizationMonitoring
     internal class LockRoomOnPressureDecrease : IRoomAspect
     {
         /// <summary>
+        /// Gets a value indicating whether this room is locked.
+        /// </summary>
+        public bool Locked { get; private set; }
+
+        /// <summary>
         /// Gets the doors of the room.
         /// </summary>
         private List<IMyDoor> Doors { get; } = new List<IMyDoor>();
 
+        /// <summary>
+        /// Gets or sets the room pressure aspect.
+        /// </summary>
         private RoomPressure RoomPressure { get; set; }
 
-        public Dictionary<IMyDoor, DateTime> TemporaryOpenDoors { get; }= new Dictionary<IMyDoor, DateTime>();
-
-        public bool Locked { get; set; }
+        /// <summary>
+        /// Gets a list with temporarily opened doors.
+        /// </summary>
+        private Dictionary<IMyDoor, DateTime> TemporaryOpenDoors { get; } = new Dictionary<IMyDoor, DateTime>();
 
         /// <inheritdoc />
         public void InitializeAspect(IRoom room)
@@ -47,6 +56,9 @@ namespace LipGam.SE.Scripting.PressurizationMonitoring
             }
         }
 
+        /// <summary>
+        /// Locks this room.
+        /// </summary>
         private void Lock()
         {
             if (!Locked)
@@ -58,6 +70,9 @@ namespace LipGam.SE.Scripting.PressurizationMonitoring
             ControlTemporaryOpenDoors();
         }
 
+        /// <summary>
+        /// Unlocks this room.
+        /// </summary>
         private void Unlock()
         {
             if (Locked)
@@ -67,6 +82,9 @@ namespace LipGam.SE.Scripting.PressurizationMonitoring
             }
         }
 
+        /// <summary>
+        /// Updates and manages state of opened doors.
+        /// </summary>
         private void ControlTemporaryOpenDoors()
         {
             foreach (IMyDoor door in Doors)
@@ -88,7 +106,9 @@ namespace LipGam.SE.Scripting.PressurizationMonitoring
                         {
                             TemporaryOpenDoors.Add(door, DateTime.Now);
                         }
+
                         break;
+
                     default:
                         TemporaryOpenDoors.Remove(door);
                         break;
