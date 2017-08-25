@@ -2,7 +2,7 @@
 //      Copyright © LipGam Gaming Community. All rights reserved.
 // </copyright>
 
-namespace IngameScript
+namespace LipGam.SE.Scripting.DoorDisplays
 {
     using System;
     using System.Collections.Generic;
@@ -13,8 +13,22 @@ namespace IngameScript
     /// <summary>
     /// Script class for door display controlling.
     /// </summary>
-    internal class Program : MyGridProgram
+    internal class Program
     {
+        /// <summary>
+        /// Gets the game program.
+        /// </summary>
+        private MyGridProgram GridProgram { get; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Program"/> class.
+        /// </summary>
+        /// <param name="gridProgram">The grid Program.</param>
+        public Program(MyGridProgram gridProgram)
+        {
+            GridProgram = gridProgram;
+        }
+
         /// <summary>
         /// Entry point of the script.
         /// </summary>
@@ -22,7 +36,7 @@ namespace IngameScript
         public void Main(string argument)
         {
             List<IMyTextPanel> doorLcds = new List<IMyTextPanel>();
-            GridTerminalSystem.GetBlocksOfType(doorLcds, DoorLcdPredicate);
+            GridProgram.GridTerminalSystem.GetBlocksOfType(doorLcds, DoorLcdPredicate);
 
             foreach (IMyTextPanel doorLcd in doorLcds)
             {

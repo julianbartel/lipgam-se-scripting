@@ -4,29 +4,14 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{AB1CF4EC-D880-4A22-A6B5-7128AEE1E0C7}</ProjectGuid>
+    <ProjectGuid>{D83F3F17-BF20-4804-AEA8-146B027F7EE6}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>LipGam.SE.Scripting.DoorDisplays</RootNamespace>
-    <AssemblyName>LipGam.SE.Scripting.DoorDisplays</AssemblyName>
+    <RootNamespace>LipGam.SE.Scripting.PressurizationMonitoring</RootNamespace>
+    <AssemblyName>LipGam.SE.Scripting.PressurizationMonitoring</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
-    <PublishUrl>publish\</PublishUrl>
-    <Install>true</Install>
-    <InstallFrom>Disk</InstallFrom>
-    <UpdateEnabled>false</UpdateEnabled>
-    <UpdateMode>Foreground</UpdateMode>
-    <UpdateInterval>7</UpdateInterval>
-    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
-    <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
-    <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
-    <UseApplicationTrust>false</UseApplicationTrust>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
@@ -109,24 +94,19 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LockRoomOnPressureDecrease.cs" />
     <Compile Include="Program.cs" />
     <AdditionalFiles Include="thumb.png" />
     <Compile Include="ScriptBootstrapper.cs" />
   </ItemGroup>
   <ItemGroup>
-    <BootstrapperPackage Include=".NETFramework,Version=v4.6.1">
-      <Visible>False</Visible>
-      <ProductName>Microsoft .NET Framework 4.6.1 %28x86 and x64%29</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
+    <ProjectReference Include="..\LipGam.SE.Scripting.Common\LipGam.SE.Scripting.Common.csproj">
+      <Project>{e909424b-8637-40cf-809a-a3c93c80c007}</Project>
+      <Name>LipGam.SE.Scripting.Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Target Name="PackSpaceEngineersScript" AfterTargets="Build" Outputs="c:\SpaceEngineers\IngameScripts\$(ProjectName)\script.cs">
+  <Target Name="PackSpaceEngineersScript" AfterTargets="Build" Outputs="bin\Debug\Script.cs">
     <Exec Command="..\..\tools\ScriptPacker\bin\SpaceEngineersScriptPacker.exe &quot;$(SolutionPath)&quot; &quot;$(ProjectPath)&quot; &quot;c:\SpaceEngineers\IngameScripts\$(ProjectName)\script.cs&quot;" WorkingDirectory="$(ProjectDir)" />
   </Target>
 </Project>
